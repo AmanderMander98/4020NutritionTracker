@@ -43,6 +43,16 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
     FoodAdapter foodAdapter;
     private RecyclerView recyclerView;
 
+    String foodSearchName = MainActivity.getFoodSeachFromClass();
+
+    private static int ID;
+
+    public static int getIDFromClass() {
+        return ID;
+    }
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +81,7 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
         foodAdapter = new FoodAdapter();
         recyclerView.setAdapter(foodAdapter);
 
-        foods.add(new Food());
+        //foods.add(new Food());
         //foods.add(new Food(1, "Chicken", "Food", 200));
         //foods.add(new Food(1, "Turkey", "Food", 200));
 
@@ -134,6 +144,8 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
             Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/search").buildUpon();
             builder.appendQueryParameter("api_key", getResources().getString(R.string.api_key));
             //builder.appendQueryParameter("generalSearchInput", "pepperoni pizza");
+            builder.appendQueryParameter("generalSearchInput", foodSearchName);
+            Log.i("FOOD SEARCH", "" + foodSearchName);
 
             try {
                 URL url = new URL(builder.toString());
@@ -175,8 +187,11 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
                 }
 
                 StringBuilder tagBuilder = new StringBuilder();
+
+                int count = 0;
                 for (String tag : taglist) {
-                    tagBuilder.append(tag);
+                    tagBuilder.append(count++ + ". " + tag);
+                    Log.i("MESSAGE", count++ + ". " + tag);
                     tagBuilder.append("\n");
                 }
 
@@ -200,8 +215,9 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
             tv.setText(resultData.titleStr);*/
 
             //TextView tv = findViewById(R.id.tag_textView);
-            TextView textView = findViewById(R.id.textView);
-            textView.setText(resultData.tagStr);
+            //TextView textView = findViewById(R.id.textView);
+            //textView.setText(resultData.tagStr);
+            foodAdapter.notifyDataSetChanged();
 
             dataDownload = null;
         }
@@ -302,7 +318,7 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
                             "<p><b>ID: </b> " + foods.get(position).getId() + "</p>" +
                             "<p><b>Description: </b> " + foods.get(position).getDescription() + "</p>" +
                             "<p><b>Data Type: </b> " + foods.get(position).getDataType() + "</p>" +
-                            "<html>"/*
+                            "<html>"
                     /*"<p><b>ID: </b> " + food.getId() + "</p>" +
                     "<p><b>Description: </b> " + food.getDescription() + "</p>" +
                     "<p><b>Data Type: </b> " + food.getDataType() + "</p>" +
@@ -311,14 +327,19 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
 
                      */
 
+
             ));
+
+
+            ID = foods.get(position).getId();
+
             Log.i("Position", "" + position);
             Log.i("ID", "" + foods.get(position).getId());
 
             builder.setTitle("Food Info").setPositiveButton("Get Nutrition Info", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int choice) {
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent i = new Intent(getApplicationContext(), GetNutritionInfo.class);
                     getApplicationContext().startActivity(i);
                 }
             });

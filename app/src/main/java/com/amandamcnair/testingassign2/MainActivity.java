@@ -17,7 +17,9 @@ import android.os.Bundle;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +40,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static String foodSearch;
 
+    public static String getFoodSeachFromClass() {
+        return foodSearch;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+
 
         findViewById(R.id.descriptions_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +66,23 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.recyclerView_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                useRecyclerView();
+
+                EditText editText = (EditText) findViewById(R.id.food_search);
+                String foodSearchText = editText.getText().toString();
+
+                //Log.i("STATUS:", "" + (foodSearchText.matches("")));
+                Log.i("Food Search:", "" + foodSearchText);
+
+                if(foodSearchText.matches(""))
+                {
+                    Toast.makeText(getApplicationContext(), "Must enter a food to search!", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    foodSearch = foodSearchText;
+                    useRecyclerView();
+                }
+
             }
         });
     }

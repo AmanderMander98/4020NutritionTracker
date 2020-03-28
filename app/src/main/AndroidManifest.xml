@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".Descriptions"/>
         <activity android:name=".FoodItemsRecyclerView"/>
+        <activity android:name=".GetNutritionInfo"/>
+
     </application>
 
 </manifest>
