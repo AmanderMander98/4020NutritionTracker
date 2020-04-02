@@ -5,16 +5,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,17 +27,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Scanner;
-import java.util.TreeSet;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
 
 public class GetNutritionInfo extends AppCompatActivity {
 
@@ -49,7 +39,6 @@ public class GetNutritionInfo extends AppCompatActivity {
     //private RecyclerView.Adapter adapter;
 
     private  KetoTracker ketoTracker = new KetoTracker();
-
     //ArrayList<Nutrition> nutritionAR = new ArrayList<Nutrition>();
     int id = FoodItemsRecyclerView.getIDFromClass();
 
@@ -59,16 +48,17 @@ public class GetNutritionInfo extends AppCompatActivity {
         setContentView(R.layout.getnutritioninfo);
         //log food button listener created in onPostExecute
 
-        /*
-        findViewById(R.id.changeLogButton).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.goToLogButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), LogItemsRecyclerView.class);
+                boolean itemAddedBool = false;
+                intent.putExtra("itemAddedBool",itemAddedBool);
                 startActivity(intent);
+
+                ketoTracker.clearData();
             }
         });
-
-         */
 
         doDownload();
         //writeLog();
@@ -212,7 +202,6 @@ public class GetNutritionInfo extends AppCompatActivity {
                         textBuilder.append("This listing does not have significant carbohydrate" +
                                 " content. Please go back and choose a similar listing. ");
                     } else {
-
                         netCarbs = carbsPerServing - fiberPerServing;
 
                         if (netCarbs >= 0) {
@@ -238,7 +227,6 @@ public class GetNutritionInfo extends AppCompatActivity {
                         }
                     }
                 }
-
 
                 tagString = textBuilder.toString();
 
@@ -279,26 +267,27 @@ public class GetNutritionInfo extends AppCompatActivity {
 
 
             //"log this food" button
-            /*
-            findViewById(R.id.descriptions_button).setOnClickListener(new View.OnClickListener() {
+
+            findViewById(R.id.logThisFoodButton).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // add this item to tracker
-
                     ketoTracker.addFood(foodItem);
 
-                    File save = new File(getFilesDir(), "logSave.txt");
-                    save.delete();
+                    //File save = new File(getFilesDir(), "logSave.txt");
+                    //save.delete();
 
                     saveKetoTrackerToFile();
 
                     //writeLog();
                     Intent intent = new Intent(getApplicationContext(), LogItemsRecyclerView.class);
+                    boolean itemAddedBool = true;
+                    intent.putExtra("itemAddedBool",itemAddedBool);
                     startActivity(intent);
+
+                    ketoTracker.clearData();
                 }
             });
-
-             */
 
             dataDownload = null;
         }
@@ -346,9 +335,6 @@ public class GetNutritionInfo extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        //write all food data to file
-        //saveKetoTrackerToFile();
-        //file.delete();
         super.onStop();
     }
 
@@ -398,24 +384,16 @@ public class GetNutritionInfo extends AppCompatActivity {
                 Log.i("Save: ","file exists and has nonzero length");
                 Log.i("save.length: ",""+save.length());
 
-                //int foodCount = Integer.parseInt(scanner.next());
-                //Log.i("foodCount : ",""+foodCount);
-                //get the saved data and write log
-
                 //4 lines for each food
                 int foodId;
                 while (scanner.hasNextInt()) {
                     //1) id
                     foodId = Integer.parseInt(scanner.next());
-                    //Log.i("file : ",""+scanner.next());
-                    //Log.i("file : ",""+scanner.next())
 
                     //2) carbs
-                    //Log.i("file : ",""+scanner.next());
                     double c = Double.parseDouble(scanner.next());
 
                     //4) fiber
-                    //Log.i("file : ",""+scanner.next());
                     double f = Double.parseDouble(scanner.next());
 
                     String fn = getNameUsingId(foodId);
@@ -435,6 +413,12 @@ public class GetNutritionInfo extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void itemAddedToast(int position) {
+        String itemRemoved = ketoTracker.getFoodNameAt(position);
+        Toast.makeText(getApplicationContext(),
+                itemRemoved+ " added successfully.", Toast.LENGTH_LONG).show();
     }
 
     public void exitTracker() {
