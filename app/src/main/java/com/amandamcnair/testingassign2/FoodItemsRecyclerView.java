@@ -30,27 +30,22 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeSet;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class FoodItemsRecyclerView extends AppCompatActivity {
 
-
     ArrayList<Food> foods = new ArrayList<Food>();
     //ArrayList<Food> foods;
     FoodAdapter foodAdapter;
     private RecyclerView recyclerView;
-
     String foodSearchName = MainActivity.getFoodSeachFromClass();
 
     private static int ID;
-
     public static int getIDFromClass() {
         return ID;
     }
-
 
 
     @Override
@@ -58,34 +53,18 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fooditemsrecyclerview);
 
-        /*Uri.Builder builder = Uri.parse("http://api.nal.usda.gov/fdc/v1/search").buildUpon();
-        builder.appendQueryParameter("api_key", getResources().getString(R.string.api_key));
-        builder.appendQueryParameter("generalSearchInput", "pepperoni pizza");
 
-        try {
-            URL url = new URL(builder.toString());
-            Log.i("RESULT", url.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
 
-         */
-
-        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView = findViewById(R.id.logRecyclerView);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        //foods = new ArrayList<>();
-        foodAdapter = new FoodAdapter();
-        recyclerView.setAdapter(foodAdapter);
-
-        //foods.add(new Food());
-        //foods.add(new Food(1, "Chicken", "Food", 200));
-        //foods.add(new Food(1, "Turkey", "Food", 200));
 
         doDownload();
+        foodAdapter = new FoodAdapter();
+        recyclerView.setAdapter(foodAdapter);
 
         /*findViewById(R.id.getFood_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +72,6 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
                 doDownload();
             }
         });
-
          */
     }
 
@@ -168,6 +146,7 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
 
                 JSONObject reader = new JSONObject(jsonData.toString());
                 JSONArray foodsArray = reader.getJSONArray("foods");
+
                 for(int i = 0; i < foodsArray.length(); i++)
                 {
                     JSONObject food = foodsArray.getJSONObject(i);
@@ -179,7 +158,12 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
                     //String foodCode = food.getString("foodCode");
 
 
-                    foods.add(new Food(id, descript, dataType));
+                    String brandowner = "";
+                    if (dataType.equals("Branded")) {
+                        brandowner = food.getString("brandOwner");
+                    }
+
+                    foods.add(new Food(id, descript, dataType , brandowner));
                     //Log.i("Food Object", "" + foods.add(new Food(id, descript, dataType)));
                     Log.i("Food Object", "" + foods.get(i).getId());
                     taglist.add(descript);
@@ -291,33 +275,33 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
         public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
 
             //holder.view.setText(foods.get(position).getDescription());
-            holder.view.setText(foods.get(position).getDescription());
+            holder.view.setText(foods.get(position).getDescription() + "\n" + foods.get(position).getBrandOwner());
         }
 
         @Override
         public int getItemCount() {
-            if(foods != null)
-            {
+            if(foods != null) {
                 return foods.size();
             }
-            else
-            {
+            else {
                 return 0;
             }
-            //return 5;
         }
 
         @Override
         public void onClick(View view, int position) {
             //City city = cities.get(getAdapterPosition()); nmj
 
+            String brandNameString = "";
+
+            if (foods.get(position).getDataType().equals("Branded")) { brandNameString = "by " + foods.get(position).getBrandOwner(); }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(FoodItemsRecyclerView.this);
             builder.setMessage(Html.fromHtml("<html>" +
-
+                            brandNameString +
+                            "<p><b>Data Type: </b> " + foods.get(position).getDataType() + "</p>" +
                             "<p><b>ID: </b> " + foods.get(position).getId() + "</p>" +
                             "<p><b>Description: </b> " + foods.get(position).getDescription() + "</p>" +
-                            "<p><b>Data Type: </b> " + foods.get(position).getDataType() + "</p>" +
                             "<html>"
                     /*"<p><b>ID: </b> " + food.getId() + "</p>" +
                     "<p><b>Description: </b> " + food.getDescription() + "</p>" +
@@ -343,6 +327,7 @@ public class FoodItemsRecyclerView extends AppCompatActivity {
                     getApplicationContext().startActivity(i);
                 }
             });
+
             builder.setTitle("Food Info").setNegativeButton("Go Back", null);
             builder.create().show();
         }
