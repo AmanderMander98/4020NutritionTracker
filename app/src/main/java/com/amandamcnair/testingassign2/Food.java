@@ -2,14 +2,23 @@ package com.amandamcnair.testingassign2;
 
 public class Food {
     public int id;
+    public double carbs, fiber;
     public String description;
     public String dataType;
     public String foodCode;
+    public String brandOwner;
 
-    public Food() {
+    public Food() {}
 
+
+    public Food(int id, String description, String dataType, String brandOwner) {
+        this.id = id;
+        this.description = description;
+        this.dataType = dataType;
+        this.brandOwner = brandOwner;
     }
 
+    /*
     public Food(int id, String description, String dataType, String foodCode) {
         this.id = id;
         this.description = description;
@@ -17,10 +26,14 @@ public class Food {
         this.foodCode = foodCode;
     }
 
-    public Food(int id, String description, String dataType) {
+     */
+
+    //constructor for tracker class
+    public Food(int id, String description, double carbs, double fiber) {
         this.id = id;
         this.description = description;
-        this.dataType = dataType;
+        this.carbs = carbs;
+        this.fiber = fiber;
     }
 
     public int getId() {
@@ -39,7 +52,11 @@ public class Food {
         return foodCode;
     }
 
+    public double getCarbs() { return carbs; }
 
+    public double getFiber() { return fiber;}
+
+    public String getBrandOwner() { return brandOwner; }
 
 
     public void setId(int id) {
@@ -57,4 +74,6 @@ public class Food {
     public void setFoodCode(String foodCode) {
         this.foodCode = foodCode;
     }
+
+    public void setBrandOwner(String brandOwner) {this.brandOwner = brandOwner; }
 }
