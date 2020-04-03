@@ -21,6 +21,7 @@
         <activity android:name=".Descriptions"/>
         <activity android:name=".FoodItemsRecyclerView"/>
         <activity android:name=".GetNutritionInfo"/>
+        <activity android:name=".LogItemsRecyclerView"/>
 
     </application>
 
